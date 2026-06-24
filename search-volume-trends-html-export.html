@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Volume Trends - Candidate vs Employer vs Overall</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #f8f9fa;
+            padding: 24px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 24px;
+        }
+        
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-bottom: 20px;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        
+        .summary-card {
+            padding: 20px;
+            border-radius: 12px;
+        }
+        
+        .summary-card.candidate {
+            background: #f0f9ff;
+        }
+        
+        .summary-card.employer {
+            background: #fef2f2;
+        }
+        
+        .summary-card.overall {
+            background: #ecfdf5;
+        }
+        
+        .summary-card h3 {
+            margin: 0;
+            font-size: 14px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        
+        .summary-card.candidate h3 {
+            color: #2563eb;
+        }
+        
+        .summary-card.employer h3 {
+            color: #dc2626;
+        }
+        
+        .summary-card.overall h3 {
+            color: #059669;
+        }
+        
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            font-size: 14px;
+        }
+        
+        .stat-label {
+            color: #666;
+        }
+        
+        .stat-value {
+            font-weight: 600;
+        }
+        
+        .positive {
+            color: #059669;
+        }
+        
+        .negative {
+            color: #dc2626;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        tr {
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        tr:last-child {
+            border-bottom: none;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        .footer {
+            margin-top: 24px;
+            color: #888;
+            font-size: 12px;
+        }
+        
+        @media (max-width: 768px) {
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Search Volume Trends Analysis</h1>
+        <p class="subtitle">Monthly search volumes from June 2024 to May 2026 for Candidate, Employer, and Overall</p>
+
+        <!-- Line Chart -->
+        <div class="card">
+            <h2 style="margin-top: 0; margin-bottom: 20px; color: #333;">Search Volume Trends</h2>
+            <div class="chart-container">
+                <canvas id="trendsChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Summary Statistics -->
+        <div class="summary-grid">
+            <div class="summary-card candidate">
+                <h3>Candidate</h3>
+                <div style="margin-top: 12px;">
+                    <div class="stat-row">
+                        <span class="stat-label">Total:</span>
+                        <span class="stat-value">8,366,300</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Average:</span>
+                        <span class="stat-value">348,596</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Max:</span>
+                        <span class="stat-value">463,070</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Min:</span>
+                        <span class="stat-value">299,100</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Growth (Jun 24→May 26):</span>
+                        <span class="stat-value positive">+21.20%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary-card employer">
+                <h3>Employer</h3>
+                <div style="margin-top: 12px;">
+                    <div class="stat-row">
+                        <span class="stat-label">Total:</span>
+                        <span class="stat-value">897,920</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Average:</span>
+                        <span class="stat-value">37,413</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Max:</span>
+                        <span class="stat-value">49,880</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Min:</span>
+                        <span class="stat-value">27,580</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Growth (Jun 24→May 26):</span>
+                        <span class="stat-value positive">+58.36%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary-card overall">
+                <h3>Overall</h3>
+                <div style="margin-top: 12px;">
+                    <div class="stat-row">
+                        <span class="stat-label">Total:</span>
+                        <span class="stat-value">9,264,220</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Average:</span>
+                        <span class="stat-value">386,009</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Max:</span>
+                        <span class="stat-value">490,650</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Min:</span>
+                        <span class="stat-value">329,450</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Growth (Jun 24→May 26):</span>
+                        <span class="stat-value positive">+24.35%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MoM Trend Table -->
+        <div class="card">
+            <h2 style="margin-top: 0; margin-bottom: 20px; color: #333;">Month-over-Month Trends (%)</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Month</th>
+                            <th style="text-align: right;">Candidate</th>
+                            <th style="text-align: right;">Employer</th>
+                            <th style="text-align: right;">Overall</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Jun 2024</td>
+                            <td style="text-align: right;">N/A</td>
+                            <td style="text-align: right;">N/A</td>
+                            <td style="text-align: right;">N/A</td>
+                        </tr>
+                        <tr>
+                            <td>Jul 2024</td>
+                            <td style="text-align: right;" class="positive">+4.04%</td>
+                            <td style="text-align: right;" class="positive">+2.75%</td>
+                            <td style="text-align: right;" class="positive">+3.93%</td>
+                        </tr>
+                        <tr>
+                            <td>Aug 2024</td>
+                            <td style="text-align: right;" class="positive">+6.92%</td>
+                            <td style="text-align: right;" class="positive">+1.62%</td>
+                            <td style="text-align: right;" class="positive">+6.47%</td>
+                        </tr>
+                        <tr>
+                            <td>Sep 2024</td>
+                            <td style="text-align: right;" class="negative">-1.70%</td>
+                            <td style="text-align: right;" class="negative">-6.55%</td>
+                            <td style="text-align: right;" class="negative">-2.09%</td>
+                        </tr>
+                        <tr>
+                            <td>Oct 2024</td>
+                            <td style="text-align: right;" class="positive">+28.57%</td>
+                            <td style="text-align: right;" class="negative">-7.48%</td>
+                            <td style="text-align: right;" class="positive">+25.81%</td>
+                        </tr>
+                        <tr>
+                            <td>Nov 2024</td>
+                            <td style="text-align: right;" class="negative">-10.74%</td>
+                            <td style="text-align: right;" class="positive">+9.54%</td>
+                            <td style="text-align: right;" class="negative">-9.60%</td>
+                        </tr>
+                        <tr>
+                            <td>Dec 2024</td>
+                            <td style="text-align: right;" class="negative">-13.45%</td>
+                            <td style="text-align: right;" class="positive">+2.75%</td>
+                            <td style="text-align: right;" class="negative">-12.35%</td>
+                        </tr>
+                        <tr>
+                            <td>Jan 2025</td>
+                            <td style="text-align: right;" class="positive">+0.18%</td>
+                            <td style="text-align: right;" class="negative">-6.44%</td>
+                            <td style="text-align: right;" class="negative">-0.35%</td>
+                        </tr>
+                        <tr>
+                            <td>Feb 2025</td>
+                            <td style="text-align: right;" class="negative">-16.54%</td>
+                            <td style="text-align: right;" class="positive">+4.51%</td>
+                            <td style="text-align: right;" class="negative">-14.96%</td>
+                        </tr>
+                        <tr>
+                            <td>Mar 2025</td>
+                            <td style="text-align: right;" class="positive">+9.30%</td>
+                            <td style="text-align: right;" class="positive">+6.95%</td>
+                            <td style="text-align: right;" class="positive">+9.09%</td>
+                        </tr>
+                        <tr>
+                            <td>Apr 2025</td>
+                            <td style="text-align: right;" class="positive">+0.57%</td>
+                            <td style="text-align: right;" class="positive">+18.67%</td>
+                            <td style="text-align: right;" class="positive">+2.20%</td>
+                        </tr>
+                        <tr>
+                            <td>May 2025</td>
+                            <td style="text-align: right;" class="positive">+9.39%</td>
+                            <td style="text-align: right;" class="positive">+9.74%</td>
+                            <td style="text-align: right;" class="positive">+9.43%</td>
+                        </tr>
+                        <tr>
+                            <td>Jun 2025</td>
+                            <td style="text-align: right;" class="positive">+0.72%</td>
+                            <td style="text-align: right;" class="negative">-11.45%</td>
+                            <td style="text-align: right;" class="negative">-0.56%</td>
+                        </tr>
+                        <tr>
+                            <td>Jul 2025</td>
+                            <td style="text-align: right;" class="positive">+0.92%</td>
+                            <td style="text-align: right;" class="positive">+3.21%</td>
+                            <td style="text-align: right;" class="positive">+1.13%</td>
+                        </tr>
+                        <tr>
+                            <td>Aug 2025</td>
+                            <td style="text-align: right;" class="negative">-9.43%</td>
+                            <td style="text-align: right;" class="negative">-4.17%</td>
+                            <td style="text-align: right;" class="negative">-8.93%</td>
+                        </tr>
+                        <tr>
+                            <td>Sep 2025</td>
+                            <td style="text-align: right;" class="negative">-0.80%</td>
+                            <td style="text-align: right;" class="positive">+5.27%</td>
+                            <td style="text-align: right;" class="negative">-0.19%</td>
+                        </tr>
+                        <tr>
+                            <td>Oct 2025</td>
+                            <td style="text-align: right;" class="negative">-8.89%</td>
+                            <td style="text-align: right;" class="negative">-12.27%</td>
+                            <td style="text-align: right;" class="negative">-9.25%</td>
+                        </tr>
+                        <tr>
+                            <td>Nov 2025</td>
+                            <td style="text-align: right;" class="positive">+8.97%</td>
+                            <td style="text-align: right;" class="positive">+20.94%</td>
+                            <td style="text-align: right;" class="positive">+10.20%</td>
+                        </tr>
+                        <tr>
+                            <td>Dec 2025</td>
+                            <td style="text-align: right;" class="positive">+0.40%</td>
+                            <td style="text-align: right;" class="positive">+8.66%</td>
+                            <td style="text-align: right;" class="positive">+1.33%</td>
+                        </tr>
+                        <tr>
+                            <td>Jan 2026</td>
+                            <td style="text-align: right;" class="positive">+0.12%</td>
+                            <td style="text-align: right;" class="positive">+2.38%</td>
+                            <td style="text-align: right;" class="positive">+0.39%</td>
+                        </tr>
+                        <tr>
+                            <td>Feb 2026</td>
+                            <td style="text-align: right;" class="positive">+0.34%</td>
+                            <td style="text-align: right;" class="positive">+2.43%</td>
+                            <td style="text-align: right;" class="positive">+0.60%</td>
+                        </tr>
+                        <tr>
+                            <td>Mar 2026</td>
+                            <td style="text-align: right;" class="positive">+1.18%</td>
+                            <td style="text-align: right;" class="positive">+3.78%</td>
+                            <td style="text-align: right;" class="positive">+1.51%</td>
+                        </tr>
+                        <tr>
+                            <td>Apr 2026</td>
+                            <td style="text-align: right;" class="negative">-0.29%</td>
+                            <td style="text-align: right;" class="positive">+2.00%</td>
+                            <td style="text-align: right;" class="positive">+0.01%</td>
+                        </tr>
+                        <tr>
+                            <td>May 2026</td>
+                            <td style="text-align: right;" class="positive">+20.30%</td>
+                            <td style="text-align: right;" class="negative">-3.01%</td>
+                            <td style="text-align: right;" class="positive">+17.25%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <p class="footer">
+            Data processed from 198 keywords (Jun 2024 - May 2026) | 
+            <strong style="color: #2563eb;">Blue = Candidate</strong> | 
+            <strong style="color: #dc2626;">Red = Employer</strong> | 
+            <strong style="color: #059669;">Green = Overall</strong>
+        </p>
+    </div>
+
+    <script>
+        // Chart data
+        const data = [
+            { month: 'Jun 2024', candidate: 329380, employer: 30550, overall: 359930 },
+            { month: 'Jul 2024', candidate: 342690, employer: 31390, overall: 374080 },
+            { month: 'Aug 2024', candidate: 366400, employer: 31900, overall: 398300 },
+            { month: 'Sep 2024', candidate: 360170, employer: 29810, overall: 389980 },
+            { month: 'Oct 2024', candidate: 463070, employer: 27580, overall: 490650 },
+            { month: 'Nov 2024', candidate: 413330, employer: 30210, overall: 443540 },
+            { month: 'Dec 2024', candidate: 357720, employer: 31040, overall: 388760 },
+            { month: 'Jan 2025', candidate: 358370, employer: 29040, overall: 387410 },
+            { month: 'Feb 2025', candidate: 299100, employer: 30350, overall: 329450 },
+            { month: 'Mar 2025', candidate: 326930, employer: 32460, overall: 359390 },
+            { month: 'Apr 2025', candidate: 328780, employer: 38520, overall: 367300 },
+            { month: 'May 2025', candidate: 359660, employer: 42270, overall: 401930 },
+            { month: 'Jun 2025', candidate: 362260, employer: 37430, overall: 399690 },
+            { month: 'Jul 2025', candidate: 365580, employer: 38630, overall: 404210 },
+            { month: 'Aug 2025', candidate: 331100, employer: 37020, overall: 368120 },
+            { month: 'Sep 2025', candidate: 328450, employer: 38970, overall: 367420 },
+            { month: 'Oct 2025', candidate: 299250, employer: 34190, overall: 333440 },
+            { month: 'Nov 2025', candidate: 326100, employer: 41350, overall: 367450 },
+            { month: 'Dec 2025', candidate: 327410, employer: 44930, overall: 372340 },
+            { month: 'Jan 2026', candidate: 327790, employer: 46000, overall: 373790 },
+            { month: 'Feb 2026', candidate: 328910, employer: 47120, overall: 376030 },
+            { month: 'Mar 2026', candidate: 332800, employer: 48900, overall: 381700 },
+            { month: 'Apr 2026', candidate: 331850, employer: 49880, overall: 381730 },
+            { month: 'May 2026', candidate: 399200, employer: 48380, overall: 447580 }
+        ];
+
+        // Initialize chart
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('trendsChart').getContext('2d');
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.month),
+                    datasets: [
+                        {
+                            label: 'Candidate',
+                            data: data.map(d => d.candidate),
+                            borderColor: '#2563eb',
+                            backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                            borderWidth: 3,
+                            fill: false,
+                            tension: 0.4,
+                            pointRadius: 0,
+                            pointHoverRadius: 6
+                        },
+                        {
+                            label: 'Employer',
+                            data: data.map(d => d.employer),
+                            borderColor: '#dc2626',
+                            backgroundColor: 'rgba(220, 38, 38, 0.1)',
+                            borderWidth: 3,
+                            fill: false,
+                            tension: 0.4,
+                            pointRadius: 0,
+                            pointHoverRadius: 6
+                        },
+                        {
+                            label: 'Overall',
+                            data: data.map(d => d.overall),
+                            borderColor: '#059669',
+                            backgroundColor: 'rgba(5, 150, 105, 0.1)',
+                            borderWidth: 3,
+                            fill: false,
+                            tension: 0.4,
+                            pointRadius: 0,
+                            pointHoverRadius: 6
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            align: 'end',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20,
+                                font: {
+                                    size: 13
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.parsed.y.toLocaleString();
+                                }
+                            },
+                            backgroundColor: '#fff',
+                            borderColor: '#ddd',
+                            borderWidth: 1,
+                            padding: 12,
+                            titleFont: {
+                                size: 14
+                            },
+                            bodyFont: {
+                                size: 13
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                font: {
+                                    size: 11
+                                },
+                                color: '#666'
+                            }
+                        },
+                        y: {
+                            beginAtZero: false,
+                            grid: {
+                                color: '#e0e0e0',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                font: {
+                                    size: 11
+                                },
+                                color: '#666',
+                                callback: function(value) {
+                                    return value.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
